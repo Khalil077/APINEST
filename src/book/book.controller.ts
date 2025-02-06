@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, InternalServerErrorException, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
 import { BookEntity } from './entities/book.entity';
 import { BookService } from './book.service';
+import { AddBookDTO } from './DTO/AddbookDTO';
 
 @Controller('book')
 export class BookController {
@@ -11,7 +12,7 @@ export class BookController {
     }
 
     @Post('add')
-    async create(@Body() body){
+    async create(@Body() body:AddBookDTO){
         try {
             return await this.BookServ.create(body);
         } catch (error) {
