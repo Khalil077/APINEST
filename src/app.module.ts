@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookModule } from './book/book.module';
+import { AuthorModule } from './book/author/author.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();// we need to add this so file .env worked 
@@ -16,7 +17,7 @@ dotenv.config();// we need to add this so file .env worked
     database: process.env.DB_NAME,
     autoLoadEntities: true,
     synchronize: false,
-  }), BookModule,],
+  }), BookModule, AuthorModule,],
   controllers: [AppController],
   providers: [AppService],
 })
