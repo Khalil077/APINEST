@@ -7,6 +7,7 @@ import { AuthorModule } from './book/author/author.module';
 import * as dotenv from 'dotenv';
 import { FirstMiddleware } from './book/first/first.middleware';
 import { SecondMiddleware } from './book/second/second.middleware';
+import { UserModule } from './user/user.module';
 
 dotenv.config();// we need to add this so file .env worked 
 @Module({
@@ -19,7 +20,7 @@ dotenv.config();// we need to add this so file .env worked
     database: process.env.DB_NAME,
     autoLoadEntities: true,
     synchronize: false,
-  }), BookModule, AuthorModule,],
+  }), BookModule, AuthorModule, UserModule,],
   controllers: [AppController],
   providers: [AppService],
 })
@@ -27,7 +28,7 @@ export class AppModule  implements NestModule{
 
   configure(consumer:MiddlewareConsumer) {
     consumer.apply(FirstMiddleware).forRoutes(''); //kn nheb naadi toules les routes lezm nhot au moins chaine vide 
-    consumer.apply(SecondMiddleware).forRoutes({ 
+    consumer.apply(SecondMiddleware).forRoutes({ //Middleware in NestJS is best for processing requests before they reach the route handlers. 
       path:'/book*' ,
       method:RequestMethod.POST,
 
