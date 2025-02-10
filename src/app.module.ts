@@ -1,10 +1,12 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookModule } from './book/book.module';
 import { AuthorModule } from './book/author/author.module';
 import * as dotenv from 'dotenv';
+import { FirstMiddleware } from './book/first/first.middleware';
+import { SecondMiddleware } from './book/second/second.middleware';
 
 dotenv.config();// we need to add this so file .env worked 
 @Module({
@@ -21,4 +23,15 @@ dotenv.config();// we need to add this so file .env worked
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule  implements NestModule{
+
+  configure(consumer:MiddlewareConsumer) {
+    consumer.apply(FirstMiddleware).forRoutes(''); //kn nheb naadi toules les routes lezm nhot au moins chaine vide 
+    consumer.apply(SecondMiddleware).forRoutes({ 
+      path:'/book*' ,
+      method:RequestMethod.POST,
+
+
+    }) ;
+  }
+}
