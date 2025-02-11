@@ -1,11 +1,15 @@
-import { Body, Controller, Delete, Get, InternalServerErrorException, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, InternalServerErrorException, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { BookEntity } from './entities/book.entity';
 import { BookService } from './book.service';
 import { AddBookDTO } from './DTO/AddbookDTO';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/user/auth.guard';
 
 @Controller('book')
 export class BookController {
     constructor(private BookServ:BookService){}
+    
+    @UseGuards(JwtAuthGuard)
     @Get('all') 
     msg() {
         return 'hello'

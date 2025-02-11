@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { RoleEnum } from './generics/role.enum';
 import * as bcrypt from 'bcrypt';
-
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class UserService {
     constructor(  @InjectRepository(UserEntity) //un constructor est une méthode spéciale d'une classe qui est exécutée 
     // automatiquement lorsqu'un objet de cette classe est instancié.
-    private UserRep: Repository<UserEntity>,) { 
+    private UserRep: Repository<UserEntity>,private jwtSer : JwtService) { 
    
 }
 async createUser(user) {
@@ -32,4 +32,28 @@ async createUser(user) {
 findallusers(){
     return this.UserRep.find()
 }
+async login(user) {
+    let qb = await this.UserRep.createQueryBuilder('user');
+    const u = await qb
+      .select('user')
+      .where('user.username = :ident OR user.email = :ident')//aamel el login yaa bel email wala username
+      .setParameter('ident', user.identifiant)
+      .getOne();
+    if (!u)
+      throw new NotFoundException(
+        'Aucun utilisateur trouvé avec cet identifiant',
+      );
+    const test = await bcrypt.compare(user.password, u.password);
+    if (!test) throw new NotFoundException('Mot de passe invalide');
+    const token = this.jwtSer.sign(
+      {
+          id : u.id,
+          role : u.role
+      }
+  )
+    return {
+      message : "Connexion réussie",
+      access_token: token,
+    };
+  }
 }
